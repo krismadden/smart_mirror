@@ -1,0 +1,39 @@
+import processing.io.*;
+import gohai.glvideo.*;
+import gab.opencv.*;
+import java.awt.Rectangle;
+SoftwareServo servo1;
+SoftwareServo servo2;
+GLCapture camera;
+OpenCV opencv;
+void setup() {
+  size(820, 840, P2D);
+  String[] devices = GLCapture.list();
+  camera = new GLCapture(this, devices[0], 320, 240, 25);
+  camera.start();
+  opencv = new OpenCV(this, 320, 240);
+  opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE); 
+  
+  servo1 = new SoftwareServo(this);
+  servo1.attach(15);
+  
+  servo2 = new SoftwareServo(this);
+  servo2.attach(18);
+}
+void draw() {
+  background(0);
+  if (camera.available()) {
+    camera.read();
+    opencv.loadImage(camera);
+  }
+  Rectangle[] faces = opencv.detect();
+     if(faces.length > 0){
+    servo1.write(5);
+    servo2.write(95);
+  }else{
+    servo1.write(95);
+    servo2.write(5);
+  }
+  println(faces.length + " faces detected");
+  
+}
